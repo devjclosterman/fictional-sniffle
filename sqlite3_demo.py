@@ -11,26 +11,40 @@ c.execute("""CREATE TABLE employees (
           pay integer
 )""")
 
-#CRUD tactics :)
+# CRUD tactics
 def insert_emp(emp):
     with conn:
-        c.execute("INSERT INTO employees VALUES (:first, :last, :pay)", {'first': emp.first, 'last': emp.last, 'pay': emp.pay})
+        query = "INSERT INTO employees VALUES (:first, :last, :pay)"
+        values = {'first': emp.first, 'last': emp.last, 'pay': emp.pay}
+        print("Insert Query:", query)
+        print("Insert Values:", values)
+        c.execute(query, values)
 
 
 def get_emps_by_name(lastname):
-    c.execute("SELECT * FROM employees WHERE last=:last", {'last': 'lastname'})
+    query = "SELECT * FROM employees WHERE last=:last"
+    values = {'last': lastname}
+    print("Select Query:", query)
+    print("Select Values:", values)
+    c.execute(query, values)
     return c.fetchall()
 
 def update_pay(emp, pay):
     with conn:
-        c.execute("""UPDATE employees SET pay = :pay
-                  WHERE first = :first AND last = :last""",
-                  {'first': emp.first, 'last': emp.last, 'pay': pay})
+        query = """UPDATE employees SET pay = :pay
+                  WHERE first = :first AND last = :last"""
+        values = {'first': emp.first, 'last': emp.last, 'pay': pay}
+        print("Update Query:", query)
+        print("Update Values:", values)
+        c.execute(query, values)
 
 def remove_emp(emp):
     with conn:
-        c.execute("DELETE from employees WHERE first = :first AND last = :last",
-                  {'first': emp.first, 'last': emp.last})
+        query = "DELETE from employees WHERE first = :first AND last = :last"
+        values = {'first': emp.first, 'last': emp.last}
+        print("Delete Query:", query)
+        print("Delete Values:", values)
+        c.execute(query, values)
 
 emp_1 = Employee('John', 'Doe', 80000)
 emp_2 = Employee('Jane', 'Doe', 90000)
@@ -39,35 +53,9 @@ insert_emp(emp_1)
 insert_emp(emp_2)
 
 emps = get_emps_by_name('Doe')
-print(emps)
+print("Employees:", emps)
 
 update_pay(emp_2, 95000)
 remove_emp(emp_1)
-
-c.execute("INSERT INTO employees VALUES (?, ?, ?)", (emp_1.first, emp_1.last, emp_1.pay))
-
-conn.commit()
-
-c.execute("INSERT INTO employees VALUES (:first, :last, :pay)", {'first': emp_2.first, 'last': emp_2.last, 'pay': emp_2.pay})
-
-conn.commit()
-
-c.execute("SELECT * FROM employees WHERE last=?", ('Schafer',))
-
-print(c.fetchall())
-
-print(emp_1.first)
-print(emp_1.last)
-print(emp_1.pay)
-
-c.execute("SELECT * FROM employees WHERE last=:last", {'last': 'Doe'})
-
-print(c.fetchall())
-
-conn.commit()
-
-# c.execute("SELECT * FROM employees WHERE last='Schafer'")
-print(c.fetchone())
-conn.commit()
 
 conn.close()
